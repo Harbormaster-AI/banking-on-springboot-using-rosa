@@ -1,0 +1,84 @@
+#------------------------------------------------------------------------------
+# Harbormaster
+# 2021 Harbormaster, Inc.
+# All Rights Reserved.
+# 
+# This file is subject to the terms and conditions defined in
+# file 'license.txt', which is part of this source code package.
+#  
+# Contributors :
+#       Harbormaster Dev Team - General Release
+#-------------------------------------------------------------------------------
+
+.gitignore=
+pom.xml=
+pom*.xml=
+settings.xml=
+checkstyle.xml=
+Dockerfile=
+entrypoint.sh
+build.xml=
+README.md=
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+#()
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+Application.java=.src.main.java.com.harbormaster
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+commands.kt=.src.main.kotlin.$packageName.api
+entities.kt=.src.main.kotlin.$packageName.entity
+queries.kt=.src.main.kotlin.$packageName.query
+enums.kt=.src.main.kotlin.$packageName.enum
+events.kt=.src.main.kotlin.$packageName.api
+valueobjects.kt=.src.main.kotlin.$packageName.valueobject
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+*RestController.java=.src.main.java.$packageName.controller
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+*Service.java=.src.main.java.$packageName.service
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+application.properties=.src.main.resources
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+__classes__Projector.java=src.main.java.$packageName.projector
+__classes__EntityProjector.java=src.main.java.$packageName.projector
+EntityProjector.java=src.main.java.$packageName.projector
+ProjectorRegistry.java=src.main.java.$packageName.projector
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+__classes__Validator.java=.src.main.java.$packageName.validator
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+__classes__Repository.java=.src.main.java.$packageName.repository
+
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+Dockerfile=.
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+*Exception.java=.src.main.java.$packageName.exception
+
+#------------------------------------------------------------------------------
+#------------------------------------------------------------------------------
+BaseTest.java=.src.main.java.$packageName.test
+__classes__Test.java=.src.main.java.$packageName.test
+
+exclusions=mappings.properties,options.xml,settings.xml

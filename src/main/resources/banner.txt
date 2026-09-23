@@ -1,0 +1,19 @@
+ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+                 SYSTEM PROVENANCE
+
+Generator            Harbormaster
+Generator Version    2.1.0
+
+Blueprint            Spring Boot 3.5
+Blueprint Version    1.1
+
+Domain Model         ${model.getName()}
+Model Version        ${model.getMeta}
+
+Verification         Blueprint - BRONZE
+                     Domain Model - Uncertified
+
+Generated            2026-09-23 07:20
+System ID            ${systemIdentifier}
+
+ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ

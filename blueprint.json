@@ -1,0 +1,69 @@
+{
+
+    "name": "Spring Boot 3.5",
+    "shortName": "SpringBoot-3.5",
+    "summary": "This blueprint captures typical core capabilities required of a Spring Boot 3.5 system.",
+    "description": "This blueprint captures typical core capabilities required of a Spring Boot system. This includes a complete Restful backend with persistence options, controller classes and much more.",
+    "iconUrl": "blueprints/spring-boot-blueprint-header-image.png",
+    "heroImageUrl": "http://www.harbormaster.net/images/blueprints/spring.boot.hero.png",
+    "infoPageUrl": "https://harbormaster.net/springboot.35.blueprint/",
+    "version": "1.1",
+    "type": "FirstClass",
+    "releaseStatus": "production",
+    "techSourceType": "opensource",
+    "derivedFrom": "Spring Boot 2.5",
+    "majorTechnology" : "SpringBoot",
+    "supportsDocker": "true",
+    "supportsKubernetes": "true",
+    "category": "backend_framework",
+    "primaryVendor": "Broadcom",
+    "published": "true",
+    "designPattern": "ServiceLayer",
+    "architectureStyle": "Layered",
+    "useCases": "Portal,SaaS,REST API,Microservices,Marketplace,Financial Services,Healthcare,Supply Chain,Event-Driven",
+    "architecturePreviewUrl": "blueprints/architecture.diagrams/spring-boot-blueprint-system-diagram.png",
+    "metadata": "spring boot,java,layered architecture,service layer,rest api,spring data jpa,hibernate,postgresql,docker,microservices",
+    "languages": {
+      "language": [
+        {
+          "name": "java",
+          "version": "17"
+        },
+        {
+          "name": "kotlin"
+        },
+        {
+          "name": "javascript"
+        }
+      ]
+    },
+    "techStack": {
+      "techStackComponents": [
+        {
+          "tech": "SpringBoot",
+          "description": "Restful API web services backend",
+          "appLayerType": "business"
+        },
+        {
+          "tech": "Junit",
+          "description": "JUnit to test core functionality",
+          "appLayerType": "test"
+        },
+        {
+          "tech": "Maven",
+          "description": "build, commit, package, deploy, run module",
+          "appLayerType": "build"
+        },
+        {
+          "tech": "RDBMS",
+          "description": "Storage options include H2, MySQL, Postgres, and MongoDB ",
+          "appLayerType": "data"
+        },
+        {
+          "tech": "MongoDB",
+          "description": "Document based persistence",
+          "appLayerType": "data"
+        }
+      ]
+    }
+}

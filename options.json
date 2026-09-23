@@ -1,0 +1,79 @@
+{
+    "name": "spring",
+    "options": [
+      {
+        "name": "server-port",
+        "value": "8080",
+        "required": "true",
+        "description": "port for Spring-boot to listen on",
+        "type": "input"
+      },
+      {
+        "name": "entity-store-type",
+        "value": "mysql",
+        "selections": "mysql,h2,postgres,mongodb",
+        "required": "true",
+        "description": "supported database types",
+        "type": "select"
+      },
+      {
+        "name": "entity-store-url",
+        "value": "jdbc:mysql://localhost:3306",
+        "required": "true",
+        "description": "url for database",
+        "type": "input"
+      },
+      {
+        "name": "database-username",
+        "value": "root",
+        "required": "false",
+        "description": "database user name",
+        "type": "input"
+      },
+      {
+        "name": "database-password",
+        "value": "letmein2",
+        "required": "false",
+        "description": "database password",
+        "type": "input"
+      },
+      {
+        "name": "spring-profiles-active",
+        "value": "",
+        "required": "false",
+        "description": "active Spring profiles",
+        "type": "input"
+      },
+      {
+        "name": "logging-type",
+        "value": "logstash",
+        "required": "false",
+        "description": "logging type",
+        "type": "select",
+        "selections": "ecs, logstash, gelf"
+      },
+      {
+        "name": "authentication-mode",
+        "value": "",
+        "required": "false",
+        "description": "mode of authenticatino",
+        "type": "select",
+        "selections": "form-login, jwt, oauth2, ldap, saml2"
+      },
+      {
+        "name": "enable-entity-auditing",
+        "value": "true",
+        "required": "false",
+        "description": "enable entity auditing",
+        "type": "checkbox"
+      },
+      {
+        "name": "enable-service-level-monitoring",
+        "value": "true",
+        "required": "false",
+        "description": "enable service level monitoring",
+        "type": "checkbox"
+      }
+    ]
+
+}

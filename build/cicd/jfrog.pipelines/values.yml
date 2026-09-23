@@ -1,0 +1,14 @@
+gitRepo:
+  gitProvider: 
+  path: /banking-on-springboot
+  TestDBUrl: 
+  TestDBName: bankingOnSpringboot_test_db
+  TestDBPassword: 
+  TestDBDialect: org.hibernate.dialect.MySQL8Dialect 
+  TestDBDriver: com.mysql.cj.jdbc.Driver
+  DockerUserName: tylertravismya
+  DockerPassword: 69Cutlass
+  DockerOrgName: theharbormaster
+  DockerRepo: banking-on-springboot
+  DockerHost: docker.io
+  DockerTag: latest
