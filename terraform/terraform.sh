@@ -62,12 +62,15 @@ terraform validate
 # ============================================================
 # Create Terraform plan
 # ============================================================
+# bug: previous script had a blank line after `\` so `-var ...` ran as its
+# own command (exit 127: command not found) and plan never used -out.
+# Also used invalid names aws-access-key (must be aws_access_key) and
+# hardcoded empty which overrode Cloud Only TF_VAR_* secrets.
+# AWS keys come from TF_VAR_aws_access_key / TF_VAR_aws_secret_key (Actions).
 
 echo "Creating Terraform plan..."
 terraform plan \
     -input=false \
-    
--var aws-access-key=empty -var aws-secret-key=empty -var region=us-east-2 \
     -out=terraform.plan
 
 
