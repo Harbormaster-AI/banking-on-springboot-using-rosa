@@ -25,7 +25,8 @@ module "rosa" {
   source  = "terraform-redhat/rosa-hcp/rhcs"
   version = "1.7.4"
 
-  cluster_name = "bankingOnSpringboot"
+  # bug: ROSA name must be lowercase letters/hyphens only (not camelCase)
+  cluster_name      = "banking-on-springboot"
   # bug: exact 4.19.0 is not in OCM supported list; use a supported patch (e.g. 4.19.47)
   openshift_version = "4.19.47"
 
