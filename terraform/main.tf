@@ -17,6 +17,12 @@ provider "aws" {
   }
 }
 
+# bug: ROSA module needs explicit rhcs provider.
+# Auth via RHCS_TOKEN env (Cloud Only / Actions secret) — do not hardcode the token.
+# Token: https://console.redhat.com/openshift/token/rosa
+provider "rhcs" {}
+
+
 locals {
   public_key_filename  = "${path.root}/keys/id_rsa.pub"
   private_key_filename = "${path.root}/keys/id_rsa"
