@@ -25,8 +25,9 @@ module "rosa" {
   source  = "terraform-redhat/rosa-hcp/rhcs"
   version = "1.7.4"
 
-  cluster_name      = "bankingOnSpringboot"
-  openshift_version = "4.19.0"
+  cluster_name = "bankingOnSpringboot"
+  # bug: exact 4.19.0 is not in OCM supported list; use a supported patch (e.g. 4.19.47)
+  openshift_version = "4.19.47"
 
   # bug: rosa module expects list(string), not a single subnet id
   aws_subnet_ids = [aws_subnet.default.id, aws_subnet.secondary.id]
