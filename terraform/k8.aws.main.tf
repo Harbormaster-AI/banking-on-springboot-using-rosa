@@ -4,11 +4,22 @@ module "eks" {
   source   = "./eks"
 }
 
-module "k8s" {
-  source     = "./k8s"
-  # Wait for ROSA cluster before creating pods/services
-  depends_on = [module.rosa]
-}
+# ---------------------------------------------------------------------------
+# bug: kubernetes provider cannot plan when ROSA API URL is not known yet.
+# Error: "cannot load Kubernetes client config" /
+#        "default cluster has no server defined"
+#
+# Host/username/password all come from module.rosa (known after apply).
+# hashicorp/kubernetes then falls back to empty kubeconfig and fails plan.
+#
+# Temporary: skip k8s app deploy until ROSA cluster exists (two-phase apply
+# or generator fix). Re-enable module.k8s + provider after cluster_api_url
+# is available, or split terraform into cluster-then-workloads stages.
+# ---------------------------------------------------------------------------
+# module "k8s" {
+#   source     = "./k8s"
+#   depends_on = [module.rosa]
+# }
 
 module "rosa" {
   source  = "terraform-redhat/rosa-hcp/rhcs"
@@ -27,12 +38,9 @@ module "rosa" {
   create_admin_user = true
 }
 
-# bug: was mixing ROSA host/user with EKS CA + `aws eks get-token`.
-# Use ROSA admin credentials only (create_admin_user = true).
-# Auth for rhcs itself is via RHCS_CLIENT_ID/SECRET (or RHCS_TOKEN) from CI.
-provider "kubernetes" {
-  host     = module.rosa.cluster_api_url
-  username = module.rosa.cluster_admin_username
-  password = module.rosa.cluster_admin_password
-  insecure = true
-}
+# provider "kubernetes" {
+#   host     = module.rosa.cluster_api_url
+#   username = module.rosa.cluster_admin_username
+#   password = module.rosa.cluster_admin_password
+#   insecure = true
+# }
