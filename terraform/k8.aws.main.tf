@@ -15,7 +15,8 @@ module "rosa" {
   cluster_name      = "bankingOnSpringboot"
   openshift_version = "4.19.0"
 
-  aws_subnet_ids = aws_subnet.default.id
+  # bug: rosa module expects list(string), not a single subnet id
+  aws_subnet_ids = [aws_subnet.default.id, aws_subnet.secondary.id]
 
   create_account_roles  = true
   create_oidc           = true
