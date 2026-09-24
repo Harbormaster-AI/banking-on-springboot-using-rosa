@@ -5,7 +5,9 @@ module "eks" {
 }
 
 module "k8s" {
-  source   = "./k8s"
+  source     = "./k8s"
+  # Wait for ROSA cluster before creating pods/services
+  depends_on = [module.rosa]
 }
 
 module "rosa" {
@@ -25,25 +27,12 @@ module "rosa" {
   create_admin_user = true
 }
 
+# bug: was mixing ROSA host/user with EKS CA + `aws eks get-token`.
+# Use ROSA admin credentials only (create_admin_user = true).
+# Auth for rhcs itself is via RHCS_CLIENT_ID/SECRET (or RHCS_TOKEN) from CI.
 provider "kubernetes" {
-    host     = module.rosa.cluster_api_url
-    username = module.rosa.cluster_admin_username
-    password = module.rosa.cluster_admin_password
-    insecure = true
-    cluster_ca_certificate = base64decode(
-     aws_eks_cluster.this.certificate_authority[0].data
-    )
-
-    exec {
-      api_version = "client.authentication.k8s.io/v1"
-
-      command = "aws"
-
-      args = [
-        "eks",
-        "get-token",
-        "--cluster-name",
-        aws_eks_cluster.this.name
-      ]
-    }
+  host     = module.rosa.cluster_api_url
+  username = module.rosa.cluster_admin_username
+  password = module.rosa.cluster_admin_password
+  insecure = true
 }
