@@ -1,21 +1,33 @@
 
 # Modules
-module "eks" {
-  source   = "./eks"
-}
+# BUG (eliminate for ROSA): EKS path conflicts with ROSA and adds cost.
+# module "eks" {
+#   source = "./eks"
+# }
 
-module "k8s" {
-  source   = "./k8s"
-}
+# BUG: kubernetes provider cannot plan when ROSA API URL is unknown (same apply).
+# Use two-phase apply (cluster first, then workloads) in the blueprint.
+# module "k8s" {
+#   source     = "./k8s"
+#   depends_on = [module.rosa]
+# }
 
 module "rosa" {
   source  = "terraform-redhat/rosa-hcp/rhcs"
   version = "1.7.4"
 
-  cluster_name      = "bankingOnSpringboot"
-  openshift_version = "4.19.0"
+  # BUG: name must be lowercase letters/hyphens (not camelCase)
+  cluster_name = "banking-on-springboot"
+  # BUG: exact 4.19.0 not in OCM supported list — use a supported patch
+  openshift_version = "4.19.47"
 
-  aws_subnet_ids = aws_subnet.default.id
+  # BUG: must be list(string); ROSA HCP needs private subnet per AZ used
+  aws_subnet_ids = [
+    aws_subnet.public_a.id,
+    aws_subnet.public_b.id,
+    aws_subnet.private_a.id,
+    aws_subnet.private_b.id,
+  ]
 
   create_account_roles  = true
   create_oidc           = true
@@ -24,25 +36,11 @@ module "rosa" {
   create_admin_user = true
 }
 
-provider "kubernetes" {
-    host     = module.rosa.cluster_api_url
-    username = module.rosa.cluster_admin_username
-    password = module.rosa.cluster_admin_password
-    insecure = true
-    cluster_ca_certificate = base64decode(
-     aws_eks_cluster.this.certificate_authority[0].data
-    )
-
-    exec {
-      api_version = "client.authentication.k8s.io/v1"
-
-      command = "aws"
-
-      args = [
-        "eks",
-        "get-token",
-        "--cluster-name",
-        aws_eks_cluster.this.name
-      ]
-    }
-}
+# BUG: do not mix ROSA host/user with EKS CA + `aws eks get-token`.
+# When re-enabling k8s workloads (phase 2), use ROSA admin only:
+# provider "kubernetes" {
+#   host     = module.rosa.cluster_api_url
+#   username = module.rosa.cluster_admin_username
+#   password = module.rosa.cluster_admin_password
+#   insecure = true
+# }

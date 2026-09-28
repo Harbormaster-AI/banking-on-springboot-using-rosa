@@ -10,6 +10,10 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 6.0"
     }
+    # BUG: ROSA module requires terraform-redhat/rhcs provider
+    rhcs = {
+      source  = "terraform-redhat/rhcs"
+      version = ">= 1.6.8"
+    }
   }
 }
-
