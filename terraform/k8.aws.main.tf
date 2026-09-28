@@ -30,8 +30,13 @@ module "rosa" {
   # bug: exact 4.19.0 is not in OCM supported list; use a supported patch (e.g. 4.19.47)
   openshift_version = "4.19.47"
 
-  # bug: rosa module expects list(string), not a single subnet id
-  aws_subnet_ids = [aws_subnet.default.id, aws_subnet.secondary.id]
+  # bug: ROSA HCP needs private subnet(s) per AZ; pass public + private
+  aws_subnet_ids = [
+    aws_subnet.default.id,
+    aws_subnet.public_b.id,
+    aws_subnet.private_a.id,
+    aws_subnet.private_b.id,
+  ]
 
   create_account_roles  = true
   create_oidc           = true

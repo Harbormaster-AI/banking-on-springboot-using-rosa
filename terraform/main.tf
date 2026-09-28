@@ -55,32 +55,70 @@ resource "aws_key_pair" "generated" {
 # -------------------------------------------------------
 # create a default VPC is none provided
 # -------------------------------------------------------
+# bug (ROSA HCP): need ≥1 private subnet per AZ that is used.
+# Previously only public in AZ-a + a non-routed subnet in AZ-b →
+# "Only public subnets were specified in zones [a]".
 
-
-# Default vpc
 resource "aws_vpc" "default" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block           = "10.0.0.0/16"
+  enable_dns_hostnames = true
+  enable_dns_support   = true
 }
 
 data "aws_availability_zones" "available" {
   state = "available"
 }
 
+# Public subnets (IGW) — AZ a / AZ b
 resource "aws_subnet" "default" {
-  vpc_id     = aws_vpc.default.id
-  cidr_block = "10.0.1.0/24"
+  vpc_id                  = aws_vpc.default.id
+  cidr_block              = "10.0.1.0/24"
   availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = true
 }
 
+resource "aws_subnet" "public_b" {
+  vpc_id                  = aws_vpc.default.id
+  cidr_block              = "10.0.3.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[1]
+  map_public_ip_on_launch = true
+}
+
+# Private subnets (NAT) — AZ a / AZ b  (required by ROSA HCP)
+resource "aws_subnet" "private_a" {
+  vpc_id                  = aws_vpc.default.id
+  cidr_block              = "10.0.11.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[0]
+  map_public_ip_on_launch = false
+}
+
+resource "aws_subnet" "private_b" {
+  vpc_id                  = aws_vpc.default.id
+  cidr_block              = "10.0.12.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[1]
+  map_public_ip_on_launch = false
+}
+
+# Kept for RDS/EKS refs that used "secondary" (now private in AZ-b)
 resource "aws_subnet" "secondary" {
-  vpc_id            = aws_vpc.default.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = data.aws_availability_zones.available.names[1]
+  vpc_id                  = aws_vpc.default.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = data.aws_availability_zones.available.names[1]
+  map_public_ip_on_launch = false
 }
 
 resource "aws_internet_gateway" "default" {
   vpc_id = aws_vpc.default.id
+}
+
+resource "aws_eip" "nat" {
+  domain = "vpc"
+}
+
+resource "aws_nat_gateway" "default" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = aws_subnet.default.id
+  depends_on    = [aws_internet_gateway.default]
 }
 
 resource "aws_route_table" "public" {
@@ -96,11 +134,40 @@ resource "aws_route_table_association" "default" {
   route_table_id = aws_route_table.public.id
 }
 
-# bug: RDS must use DB subnet group in same VPC
+resource "aws_route_table_association" "public_b" {
+  subnet_id      = aws_subnet.public_b.id
+  route_table_id = aws_route_table.public.id
+}
+
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.default.id
+  route {
+    cidr_block     = "0.0.0.0/0"
+    nat_gateway_id = aws_nat_gateway.default.id
+  }
+}
+
+resource "aws_route_table_association" "private_a" {
+  subnet_id      = aws_subnet.private_a.id
+  route_table_id = aws_route_table.private.id
+}
+
+resource "aws_route_table_association" "private_b" {
+  subnet_id      = aws_subnet.private_b.id
+  route_table_id = aws_route_table.private.id
+}
+
+resource "aws_route_table_association" "secondary" {
+  subnet_id      = aws_subnet.secondary.id
+  route_table_id = aws_route_table.private.id
+}
+
+# bug: RDS must use DB subnet group in same VPC (private subnets, 2 AZs)
 resource "aws_db_subnet_group" "default" {
   name       = "bankingonspringboot-db-subnet"
-  subnet_ids = [aws_subnet.default.id, aws_subnet.secondary.id]
+  subnet_ids = [aws_subnet.private_a.id, aws_subnet.private_b.id]
 }
+
 
 # -------------------------------------------------------
 # Default security group to access
@@ -214,7 +281,7 @@ resource "aws_eks_cluster" "this" {
   role_arn = aws_iam_role.eks.arn
   vpc_config {
     # EKS requires subnet IDs in at least 2 AZs
-    subnet_ids = [aws_subnet.default.id, aws_subnet.secondary.id]
+    subnet_ids = [aws_subnet.default.id, aws_subnet.public_b.id, aws_subnet.private_a.id, aws_subnet.private_b.id]
   }
   depends_on = [aws_iam_role_policy_attachment.eks_cluster_policy]
 }
